@@ -8,7 +8,12 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def generate_dxf():
     if request.method == "POST":
-        return '<p>POST</p>'
+        url = request.form.get("url")
+        model = request.form.get("model")
+        serial = request.form.get("serial")
+        
+        
+        return f'<p>URL:{url}</p><p>model:{model}</p><p>Serial:{serial}</p>'
     else:
         return '<p>GET</p>'
 
