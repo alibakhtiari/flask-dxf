@@ -1,12 +1,9 @@
 from flask import Flask, request, send_file, render_template
 
 import ezdxf
-# from ezdxf import options
 from ezdxf.enums import TextEntityAlignment
 
-
 import qrcode
-
 
 app = Flask(__name__)
 
@@ -16,14 +13,10 @@ def generate_dxf():
     if request.method == "POST":
         url = request.form.get("url")
         model = request.form.get("model")
-        # serial = request.form.get("serial")
-        serial = 'HTM21P203422090621868368365024H39267' #36
-        mid = 'HTM20X10502006800955' #20
-        low = 'AR4D205001597' #13
+        serial = request.form.get("serial")
 
         # Read the existing DXF document
         file_path = "1.dxf"
-        # file_path = join(dir, '..', 'data', '1.dxf')
         doc = ezdxf.readfile(file_path)
 
         # Generate QR code
@@ -55,11 +48,11 @@ def generate_dxf():
             for x in range(qr_size):
                 if qr_matrix[y][x]:
                     msp.add_polyline2d(
-                        [(x * 0.55 + qr_x_offset, y * 0.55 + qr_y_offset),  # Increase the scale by multiplying with 10
-                        ((x + 1) * 0.55 + qr_x_offset, y * 0.55 + qr_y_offset),
-                        ((x + 1) * 0.55 + qr_x_offset, (y + 1) * 0.55 + qr_y_offset),
-                        (x * 0.55 + qr_x_offset, (y + 1) * 0.55 + qr_y_offset),
-                        (x * 0.55 + qr_x_offset, y * 0.55 + qr_y_offset)],
+                        [(x * 0.5 + qr_x_offset, y * 0.5 + qr_y_offset),  # Increase the scale by multiplying with 10
+                        ((x + 1) * 0.5 + qr_x_offset, y * 0.5 + qr_y_offset),
+                        ((x + 1) * 0.5 + qr_x_offset, (y + 1) * 0.5 + qr_y_offset),
+                        (x * 0.5 + qr_x_offset, (y + 1) * 0.5 + qr_y_offset),
+                        (x * 0.5 + qr_x_offset, y * 0.5 + qr_y_offset)],
                         close=True,
                         # Adjust the insert point as needed
                         dxfattribs={"layer": "QRCode"},
@@ -102,17 +95,17 @@ def generate_dxf():
                 first_lineText.set_placement((70, 51), align=TextEntityAlignment.LEFT)
                 second_lineText.set_placement((70, 48), align=TextEntityAlignment.LEFT)
 
-        # else:
-        serialText = msp.add_text(
-            mid,
-            dxfattribs={
-                "layer": "Text",
-                "style": "ariblk.ttf",
-                "height": 2.5,
-                "width": 0.5,  # Adjust the spacing between letters (0.8 is the default value)
-            },
-        )
-        serialText.set_placement((88, 49.5), align=TextEntityAlignment.MIDDLE_CENTER)
+            else:
+                serialText = msp.add_text(
+                    serial,
+                    dxfattribs={
+                        "layer": "Text",
+                        "style": "ariblk.ttf",
+                        "height": 2.5,
+                        "width": 0.5,  # Adjust the spacing between letters (0.8 is the default value)
+                    },
+                )
+                serialText.set_placement((88, 49.5), align=TextEntityAlignment.MIDDLE_CENTER)
         
         # Save the modified DXF file
         output_file_path = "2.dxf"
