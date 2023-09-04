@@ -11,7 +11,9 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def generate_dxf():
-    if request.method == "POST":
+    referring_url = request.referrer
+    if referring_url and referring_url.startswith("https://ramzarznegaran.com") and request.method == "POST":
+    # if request.method == "POST":
         url = request.form.get("url")
         model = request.form.get("model")
         serial = request.form.get("serial")
@@ -118,7 +120,9 @@ def generate_dxf():
 
 @app.route('/png',methods=["GET", "POST"])
 def generate_png():
-    if request.method == "POST":
+    referring_url = request.referrer
+    if referring_url and referring_url.startswith("https://ramzarznegaran.com") and request.method == "POST":
+    # if request.method == "POST":
         url = request.form.get("url")
         model = request.form.get("model")
         serial = request.form.get("serial")
