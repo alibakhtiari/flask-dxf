@@ -1,3 +1,4 @@
 ezdxf
 Flask
 qrcode
+pillow
