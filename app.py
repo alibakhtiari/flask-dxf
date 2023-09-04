@@ -2,6 +2,7 @@ from flask import Flask, request, send_file, render_template
 
 import ezdxf
 from ezdxf.enums import TextEntityAlignment
+from PIL import Image, ImageDraw, ImageFont
 
 import qrcode
 
@@ -114,6 +115,57 @@ def generate_dxf():
         return send_file(output_file_path, as_attachment=True)
     else:
         return render_template("index.html")
+
+@app.route('/png',methods=["GET", "POST"])
+def generate_png():
+    if request.method == "POST":
+        url = request.form.get("url")
+        model = request.form.get("model")
+        serial = request.form.get("serial")
+
+        # Load the original image
+        original_image = Image.open('1.jpg')
+
+        # Create a QR code
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=5,
+            border=0,
+        )
+        qr.add_data(url)  # Replace with your desired URL or data
+        qr.make(fit=True)
+
+        qr_image = qr.make_image(fill_color="black", back_color="white")
+
+        # Create a drawing context
+        draw = ImageDraw.Draw(original_image)
+
+        # Load a font (you may need to specify the font file path)
+        font = ImageFont.truetype("bold.ttf", size=30)
+        fnt = ImageFont.truetype("bold.ttf", size=28)
+
+        if len(serial) > 20:
+            first_line = serial[:20]
+            second_line = serial[20:]
+            draw.text((700,355), first_line, fill="black", font=fnt)
+            draw.text((700, 385), second_line, fill="black", font=fnt)
+        else:
+            draw.text((700, 370), serial, fill="black", font=font)
+        
+        draw.text((700, 277), model, fill="black", font=font)
+
+        # Paste the QR code onto the image
+        original_image.paste(qr_image, (1105, 430))
+
+        # Save the modified image as a temporary file
+        temp_file = '2.png'
+        original_image.save(temp_file)
+
+        # Send the generated image as a response
+        return send_file(temp_file, mimetype='image/png', as_attachment=True)
+    else:
+        return render_template("png.html")
 
 
 if __name__ == "__main__":
