@@ -71,7 +71,7 @@ def generate_dxf():
                     "style": "ariblk.ttf"
                     },
             )
-            modelText.set_placement((88, 58), align=TextEntityAlignment.MIDDLE_CENTER)
+            modelText.set_placement((70, 58), align=TextEntityAlignment.MIDDLE_CENTER)
             
             if len(serial) > 20:
                 first_line = serial[:20]
@@ -96,7 +96,7 @@ def generate_dxf():
                     },
                 )
                 first_lineText.set_placement((70, 51), align=TextEntityAlignment.LEFT)
-                second_lineText.set_placement((70, 48), align=TextEntityAlignment.LEFT)
+                second_lineText.set_placement((70, 47), align=TextEntityAlignment.LEFT)
 
             else:
                 serialText = msp.add_text(
@@ -111,12 +111,12 @@ def generate_dxf():
                 serialText.set_placement((88, 49.5), align=TextEntityAlignment.MIDDLE_CENTER)
         
         # Save the modified DXF file
-        output_file_path = "2.dxf"
+        output_file_path = "label.dxf"
         doc.saveas(output_file_path)
 
         return send_file(output_file_path, as_attachment=True)
     else:
-        return render_template("index.html")
+        return render_template("denied.html")
 
 @app.route('/png',methods=["GET", "POST"])
 def generate_png():
@@ -163,13 +163,13 @@ def generate_png():
         original_image.paste(qr_image, (1105, 430))
 
         # Save the modified image as a temporary file
-        temp_file = '2.png'
+        temp_file = 'label.png'
         original_image.save(temp_file)
 
         # Send the generated image as a response
         return send_file(temp_file, mimetype='image/png', as_attachment=True)
     else:
-        return render_template("png.html")
+        return render_template("denied.html")
 
 
 if __name__ == "__main__":
