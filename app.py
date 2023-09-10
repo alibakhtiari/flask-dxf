@@ -164,11 +164,11 @@ def generate_png():
         original_image.paste(qr_image, (1105, 430))
 
         # Save the modified image as a temporary file
-        temp_file = 'label.png'
+        temp_file ='label.jpg'
         original_image.save(temp_file)
 
         # Send the generated image as a response
-        return send_file(temp_file, mimetype='image/png', as_attachment=True)
+        return send_file(temp_file, mimetype='image/jpg', as_attachment=True)
     else:
         return render_template("denied.html")
 
