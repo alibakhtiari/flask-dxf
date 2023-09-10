@@ -112,7 +112,7 @@ def generate_dxf():
                 serialText.set_placement((70, 49.5), align=TextEntityAlignment.MIDDLE_CENTER)
         
         # Save the modified DXF file
-        output_file_path = "label.dxf"
+        output_file_path = serial + ".dxf"
         doc.saveas(output_file_path)
 
         return send_file(output_file_path, as_attachment=True)
@@ -164,7 +164,7 @@ def generate_png():
         original_image.paste(qr_image, (1105, 430))
 
         # Save the modified image as a temporary file
-        temp_file ='label.jpg'
+        temp_file = serial + '.jpg'
         original_image.save(temp_file)
 
         # Send the generated image as a response
