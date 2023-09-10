@@ -40,11 +40,6 @@ def generate_dxf():
         # Add the QR code to the DXF file
         msp = doc.modelspace()
         
-        # font_path = "Arial.ttf"  # Replace with the actual font path
-        # font_name = "Arial"  # Name to use for the font
-        # doc.styles.new(font_name, dxfattribs={'font': font_path})
-
-        
         # Add the QR code to the DXF file with filled squares
         qr_x_offset = 108  # X-coordinate offset for the QR code
         qr_y_offset = 27  # Y-coordinate offset for the QR code
@@ -69,7 +64,6 @@ def generate_dxf():
                     "layer": "Text",
                     "height": 3,
                     "width": 0.8,
-                    # "style": "ariblk.ttf"
                     },
             )
             modelText.set_placement((70, 58), align=TextEntityAlignment.MIDDLE_CENTER)
@@ -82,8 +76,7 @@ def generate_dxf():
                     first_line,
                     dxfattribs={
                         "layer": "Text",
-                        # "style": "ariblk.ttf",
-                        "height": 3,
+                        "height": 2.5,
                         "width": 0.8,  # Adjust the spacing between letters (0.8 is the default value)
                     },
                 )
@@ -91,8 +84,7 @@ def generate_dxf():
                 second_line,
                 dxfattribs={
                     "layer": "Text",
-                    # "style": "ariblk.ttf",
-                    "height": 3,
+                    "height": 2.5,
                     "width": 0.8,  # Adjust the spacing between letters (0.8 is the default value)
                     },
                 )
@@ -104,7 +96,6 @@ def generate_dxf():
                     serial,
                     dxfattribs={
                         "layer": "Text",
-                        # "style": "ariblk.ttf",
                         "height": 2.5,
                         "width": 0.8,  # Adjust the spacing between letters (0.8 is the default value)
                     },
