@@ -40,9 +40,9 @@ def generate_dxf():
         # Add the QR code to the DXF file
         msp = doc.modelspace()
         
-        font_path = "Arial.ttf"  # Replace with the actual font path
-        font_name = "Arial"  # Name to use for the font
-        doc.styles.new(font_name, dxfattribs={'font': font_path})
+        # font_path = "Arial.ttf"  # Replace with the actual font path
+        # font_name = "Arial"  # Name to use for the font
+        # doc.styles.new(font_name, dxfattribs={'font': font_path})
 
         
         # Add the QR code to the DXF file with filled squares
@@ -68,32 +68,32 @@ def generate_dxf():
                 dxfattribs={
                     "layer": "Text",
                     "height": 3,
-                    "width": 0.6,
-                    "style": "ariblk.ttf"
+                    "width": 0.8,
+                    # "style": "ariblk.ttf"
                     },
             )
             modelText.set_placement((70, 58), align=TextEntityAlignment.MIDDLE_CENTER)
             
-            if len(serial) > 20:
-                first_line = serial[:20]
-                second_line = serial[20:]
+            if len(serial) > 18:
+                first_line = serial[:18]
+                second_line = serial[18:]
 
                 first_lineText = msp.add_text(
                     first_line,
                     dxfattribs={
                         "layer": "Text",
-                        "style": "ariblk.ttf",
+                        # "style": "ariblk.ttf",
                         "height": 3,
-                        "width": 0.6,  # Adjust the spacing between letters (0.8 is the default value)
+                        "width": 0.8,  # Adjust the spacing between letters (0.8 is the default value)
                     },
                 )
                 second_lineText = msp.add_text(
                 second_line,
                 dxfattribs={
                     "layer": "Text",
-                    "style": "ariblk.ttf",
+                    # "style": "ariblk.ttf",
                     "height": 3,
-                    "width": 0.6,  # Adjust the spacing between letters (0.8 is the default value)
+                    "width": 0.8,  # Adjust the spacing between letters (0.8 is the default value)
                     },
                 )
                 first_lineText.set_placement((70, 51), align=TextEntityAlignment.LEFT)
@@ -104,12 +104,12 @@ def generate_dxf():
                     serial,
                     dxfattribs={
                         "layer": "Text",
-                        "style": "ariblk.ttf",
+                        # "style": "ariblk.ttf",
                         "height": 2.5,
-                        "width": 0.5,  # Adjust the spacing between letters (0.8 is the default value)
+                        "width": 0.8,  # Adjust the spacing between letters (0.8 is the default value)
                     },
                 )
-                serialText.set_placement((88, 49.5), align=TextEntityAlignment.MIDDLE_CENTER)
+                serialText.set_placement((70, 49.5), align=TextEntityAlignment.MIDDLE_CENTER)
         
         # Save the modified DXF file
         output_file_path = "label.dxf"
