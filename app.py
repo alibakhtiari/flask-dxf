@@ -45,21 +45,22 @@ def generate_dxf():
         doc.styles.new(font_name, dxfattribs={'font': font_path})
 
         
+        # Add the QR code to the DXF file with filled squares
         qr_x_offset = 108  # X-coordinate offset for the QR code
         qr_y_offset = 27  # Y-coordinate offset for the QR code
+        square_size = 0.5
+        
         for y in range(qr_size):
             for x in range(qr_size):
                 if qr_matrix[y][x]:
-                    msp.add_polyline2d(
-                        [(x * 0.5 + qr_x_offset, y * 0.5 + qr_y_offset),  # Increase the scale by multiplying with 10
-                        ((x + 1) * 0.5 + qr_x_offset, y * 0.5 + qr_y_offset),
-                        ((x + 1) * 0.5 + qr_x_offset, (y + 1) * 0.5 + qr_y_offset),
-                        (x * 0.5 + qr_x_offset, (y + 1) * 0.5 + qr_y_offset),
-                        (x * 0.5 + qr_x_offset, y * 0.5 + qr_y_offset)],
-                        close=True,
-                        # Adjust the insert point as needed
-                        dxfattribs={"layer": "QRCode"},
-
+                    msp.add_solid(
+                        [
+                            (x * square_size + qr_x_offset, y * square_size + qr_y_offset),
+                            ((x + 1) * square_size + qr_x_offset, y * square_size + qr_y_offset),
+                            ((x + 1) * square_size + qr_x_offset, (y + 1) * square_size + qr_y_offset),
+                            (x * square_size + qr_x_offset, (y + 1) * square_size + qr_y_offset),
+                        ],
+                        dxfattribs={"layer": "QRCode", "color": 0},  # Set color to black (0)
                     )
 
             modelText = msp.add_text(
