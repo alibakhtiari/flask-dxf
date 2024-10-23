@@ -139,8 +139,14 @@ def generate_png():
 
         draw.text((700, 277), model, fill="black", font=font)
 
-        # Paste the QR code onto the image
-        original_image.paste(qr_image, pos)
+        # Get the size of the QR image
+        qr_width, qr_height = qr_image.size
+
+        # Define the paste box (left, upper, right, lower)
+        paste_box = (pos[0], pos[1], pos[0] + qr_width, pos[1] + qr_height)
+
+        # Paste the QR image onto the original image
+        original_image.paste(qr_image, paste_box)
 
         # Save the modified image as a temporary file
         original_image.save(temp_file)
