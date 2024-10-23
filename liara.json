@@ -1,0 +1,5 @@
+{
+  "cron": [
+    "0 0 * * * cd $ROOT && python3 clean.py >> /dev/null 2>&1"
+  ]
+}
