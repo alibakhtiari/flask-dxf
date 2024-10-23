@@ -86,7 +86,7 @@ def generate_dxf():
         return render_template("denied.html")
 
 
-@app.route('/png', methods=["GET", "POST"])
+@app.route('/png', methods=["POST"])
 def generate_png():
     referring_url = request.referrer
     if referring_url and referring_url.startswith("https://ramzarznegaran.com") and request.method == "POST":
