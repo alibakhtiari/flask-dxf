@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Label Generator</title>
+</head>
+<body>
+<form action="/label" method="post" enctype="multipart/form-data">
+    <label for="device_name">Device Name:</label><br>
+    <input type="text" id="device_name" name="device_name" value="MyDevice-Test"><br><br>
+
+    <label for="serial_number">Serial Number:</label><br>
+    <input type="text" id="serial_number" name="serial_number" value="SN-12345-JPG"><br><br>
+
+    <label for="product_id">Product ID:</label><br>
+    <input type="text" id="product_id" name="product_id" value="PID-67890"><br><br>
+
+    <label for="tracking_id">Tracking ID:</label><br>
+    <input type="text" id="tracking_id" name="tracking_id" value="TID-ABCDE"><br><br>
+
+    <label for="qr_code_url">QR Code URL:</label><br>
+    <input type="text" id="qr_code_url" name="qr_code_url" value="https://example.com"><br><br>
+
+    <input type="submit" value="Generate JPG Label">
+</form>
+
+</body>
+</html>

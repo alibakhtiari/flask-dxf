@@ -1,40 +1,82 @@
 from flask import Flask, request, send_file, render_template
-
+from PIL import Image, ImageDraw, ImageFont
 import ezdxf
 from ezdxf.enums import TextEntityAlignment
-from PIL import Image, ImageDraw, ImageFont
-
 import qrcode
 import os
 
 app = Flask(__name__)
 
-def check_file_exists(filename):
-    return os.path.isfile(filename)
+# --- HELPER FUNCTION FOR THE NEW LABEL (SIMPLIFIED AND SILENT) ---
+
+
+def create_label_english(data, qr_url, template_path, font_path, output_path):
+    """
+    Generates a label with English text and a QR code.
+    This version does not use RGBA conversion or print statements.
+    """
+    coordinates = {
+        "device_name":   (720, 90),
+        "serial_number": (720, 190),
+        "product_id":    (720, 295),
+        "tracking_id":   (720, 390),
+    }
+    qr_position = (80, 250)
+    qr_size = (200, 200)
+    font_size = 30
+    text_color = "black"
+
+    try:
+        base_image = Image.open(template_path)
+        draw = ImageDraw.Draw(base_image)
+        font = ImageFont.truetype(font_path, font_size)
+    except FileNotFoundError:
+        return False  # Indicate failure silently
+
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=2,
+    )
+    qr.add_data(qr_url)
+    qr.make(fit=True)
+    qr_img = qr.make_image(
+        fill_color="black", back_color="white").resize(qr_size)
+
+    base_image.paste(qr_img, qr_position)
+
+    # Simplified loop for English text
+    for key, text in data.items():
+        draw.text(
+            coordinates[key],
+            text,  # Use the text directly
+            font=font,
+            fill=text_color,
+            anchor="ra"  # Right-align the text
+        )
+
+    base_image.save(output_path)
+    return True  # Indicate success
+
+# --- EXISTING ENDPOINTS (UNCHANGED) ---
+
 
 @app.route("/", methods=["POST"])
 def generate_dxf():
     referring_url = request.referrer
     if referring_url and referring_url.startswith("https://ramzarznegaran.com") and request.method == "POST":
-    # if request.method == "POST":
         url = request.form.get("url")
         model = request.form.get("model")
         serial = request.form.get("serial")
         output_file_path = serial + ".dxf"
 
-        # Read the existing DXF document
-        file_path = "1.dxf"
-        # doc = ezdxf.readfile(file_path)
         doc = ezdxf.new()
         msp = doc.modelspace()
 
         modelText = msp.add_text(
             model,
-            dxfattribs={
-                "layer": "Text",
-                "height": 3,
-                "width": 0.8,
-            },
+            dxfattribs={"layer": "Text", "height": 3, "width": 0.8},
         )
         modelText.set_placement(
             (70, 58), align=TextEntityAlignment.MIDDLE_CENTER)
@@ -45,43 +87,26 @@ def generate_dxf():
 
             first_lineText = msp.add_text(
                 first_line,
-                dxfattribs={
-                    "layer": "Text",
-                    "height": 2.5,
-                    "width": 0.8,
-                },
+                dxfattribs={"layer": "Text", "height": 2.5, "width": 0.8},
             )
             second_lineText = msp.add_text(
                 second_line,
-                dxfattribs={
-                    "layer": "Text",
-                    "height": 2.5,
-                    "width": 0.8,
-                },
+                dxfattribs={"layer": "Text", "height": 2.5, "width": 0.8},
             )
             first_lineText.set_placement(
                 (70, 51), align=TextEntityAlignment.LEFT)
             second_lineText.set_placement(
                 (70, 47), align=TextEntityAlignment.LEFT)
-
         else:
             serialText = msp.add_text(
                 serial,
-                dxfattribs={
-                    "layer": "Text",
-                    "height": 2.5,
-                    "width": 0.8,
-                },
+                dxfattribs={"layer": "Text", "height": 2.5, "width": 0.8},
             )
             serialText.set_placement(
                 (70, 49.5), align=TextEntityAlignment.MIDDLE_CENTER)
 
-        # Save the modified DXF file
         doc.saveas(output_file_path)
-
         return send_file(output_file_path, as_attachment=True)
-    # elif request.method == "GET":
-    #     return render_template("png.html")
     else:
         return render_template("denied.html")
 
@@ -89,9 +114,8 @@ def generate_dxf():
 @app.route('/png', methods=["POST"])
 def generate_png():
     referring_url = request.referrer
-    if referring_url and referring_url.startswith("https://ramzarznegaran.com") and request.method == "POST":
     # if request.method == "POST":
-
+    if referring_url and referring_url.startswith("https://ramzarznegaran.com") and request.method == "POST":
         url = request.form.get("url")
         if len(url) > 80:
             box = 4
@@ -104,28 +128,17 @@ def generate_png():
         serial = request.form.get("serial")
         temp_file = serial + '.jpg'
 
-        # if check_file_exists(temp_file):
-        #     return send_file(temp_file, mimetype='image/jpg', as_attachment=True)
-
-        # Load the original image
         original_image = Image.open('1.jpg')
-
-        # Create a QR code
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
             box_size=box,
             border=0,
         )
-        qr.add_data(url)  # Replace with your desired URL or data
-        # qr.make(fit=True)
-
+        qr.add_data(url)
         qr_image = qr.make_image(fill_color="black", back_color="white")
 
-        # Create a drawing context
         draw = ImageDraw.Draw(original_image)
-
-        # Load a font (you may need to specify the font file path)
         font = ImageFont.truetype("bold.ttf", size=30)
         fnt = ImageFont.truetype("bold.ttf", size=28)
 
@@ -138,25 +151,47 @@ def generate_png():
             draw.text((700, 370), serial, fill="black", font=font)
 
         draw.text((700, 277), model, fill="black", font=font)
-
-        # Get the size of the QR image
         qr_width, qr_height = qr_image.size
-
-        # Define the paste box (left, upper, right, lower)
         paste_box = (pos[0], pos[1], pos[0] + qr_width, pos[1] + qr_height)
-
-        # Paste the QR image onto the original image
         original_image.paste(qr_image, paste_box)
-
-        # Save the modified image as a temporary file
         original_image.save(temp_file)
-
-        # Send the generated image as a response
         return send_file(temp_file, mimetype='image/jpg', as_attachment=True)
-    # elif request.method == "GET":
-    #     return render_template("png.html")
     else:
         return render_template("denied.html")
+
+
+@app.route('/label', methods=["GET", "POST"])
+def generate_new_label():
+    referring_url = request.referrer
+    if request.method == "POST":
+        # if referring_url and referring_url.startswith("https://ramzarznegaran.com") and request.method == "POST":
+        label_data = {
+            "device_name": request.form.get("device_name"),
+            "serial_number": request.form.get("serial_number"),
+            "product_id": request.form.get("product_id"),
+            "tracking_id": request.form.get("tracking_id"),
+        }
+        qr_code_url = request.form.get("qr_code_url")
+
+        serial_num = label_data["serial_number"]
+        if not all([serial_num, qr_code_url]):
+            return "Missing form data (serial_number, qr_code_url)", 400
+
+        template_file = "clean.jpg"
+        font_file = "Vazirmatn-Regular.ttf"
+        # --- CHANGED: Output file extension is now .jpg ---
+        output_file = f"{serial_num}_label.jpg"
+
+        # Call the simplified label creation function
+        success = create_label_english(
+            label_data, qr_code_url, template_file, font_file, output_file)
+
+        if success:
+            return send_file(output_file, mimetype='image/jpeg', as_attachment=True)
+        else:
+            return "Failed to create label image.", 500
+    else:
+        return render_template("label.html")
 
 
 if __name__ == "__main__":

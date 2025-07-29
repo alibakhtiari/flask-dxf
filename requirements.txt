@@ -1,4 +1,5 @@
 ezdxf
 Flask
 qrcode
+requests
 pillow==10.4.0
