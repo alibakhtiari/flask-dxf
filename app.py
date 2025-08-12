@@ -57,10 +57,19 @@ def create_label_english(data, qr_url, template_path, font_path, output_path):
     return True
 
 
-@app.route("/", methods=["POST"])
+@app.route("/", methods=["GET", "POST"])
 def generate_dxf():
-    referring_url = request.referrer
-    if referring_url and referring_url.startswith("https://ramzarznegaran.com") and request.method == "POST":
+    # In debug mode, GET requests open the template.
+    if app.debug and request.method == "GET":
+        return render_template("dxf.html")
+
+    # In production, only POST requests from the correct domain are allowed.
+    if request.method == "POST":
+        referring_url = request.referrer
+        # Check referrer URL only if not in debug mode
+        if not app.debug and (not referring_url or not referring_url.startswith("https://ramzarznegaran.com")):
+            return render_template("denied.html")
+
         url = request.form.get("url")
         model = request.form.get("model")
         serial = request.form.get("serial")
@@ -103,14 +112,23 @@ def generate_dxf():
         doc.saveas(output_file_path)
         return send_file(output_file_path, as_attachment=True)
     else:
+        # Deny GET requests in production
         return render_template("denied.html")
 
 
-@app.route('/png', methods=["POST"])
+@app.route('/png', methods=["GET", "POST"])
 def generate_png():
-    referring_url = request.referrer
-    # if request.method == "POST":
-    if referring_url and referring_url.startswith("https://ramzarznegaran.com") and request.method == "POST":
+    # In debug mode, GET requests open the template.
+    if app.debug and request.method == "GET":
+        return render_template("png.html")
+
+    # In production, only POST requests from the correct domain are allowed.
+    if request.method == "POST":
+        referring_url = request.referrer
+        # Check referrer URL only if not in debug mode
+        if not app.debug and (not referring_url or not referring_url.startswith("https://ramzarznegaran.com")):
+            return render_template("denied.html")
+
         url = request.form.get("url")
         if len(url) > 80:
             box = 4
@@ -152,15 +170,23 @@ def generate_png():
         original_image.save(temp_file)
         return send_file(temp_file, mimetype='image/jpg', as_attachment=True)
     else:
+        # Deny GET requests in production
         return render_template("denied.html")
 
 
-# @app.route('/label', methods=["POST"])
 @app.route('/label', methods=["GET", "POST"])
 def generate_new_label():
-    referring_url = request.referrer
+    # In debug mode, GET requests open the template.
+    if app.debug and request.method == "GET":
+        return render_template("label.html")
+
+    # In production, only POST requests from the correct domain are allowed.
     if request.method == "POST":
-        # if referring_url and referring_url.startswith("https://ramzarznegaran.com") and request.method == "POST":
+        referring_url = request.referrer
+        # Check referrer URL only if not in debug mode
+        if not app.debug and (not referring_url or not referring_url.startswith("https://ramzarznegaran.com")):
+            return render_template("denied.html")
+
         label_data = {
             "device_name": request.form.get("device_name"),
             "serial_number": request.form.get("serial_number"),
@@ -185,9 +211,11 @@ def generate_new_label():
         else:
             return "Failed to create label image.", 500
     else:
-        # return render_template("denied.html")
-        return render_template("label.html")
+        # Deny GET requests in production
+        return render_template("denied.html")
 
 
 if __name__ == "__main__":
+    # Use 'flask run --debug' for development mode.
+    # The debug flag will automatically be set to True.
     app.run(host="0.0.0.0", port=8000)
