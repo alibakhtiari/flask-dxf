@@ -7,8 +7,6 @@ import os
 
 app = Flask(__name__)
 
-# --- HELPER FUNCTION FOR THE NEW LABEL (SIMPLIFIED AND SILENT) ---
-
 
 def create_label_english(data, qr_url, template_path, font_path, output_path):
     """
@@ -31,7 +29,7 @@ def create_label_english(data, qr_url, template_path, font_path, output_path):
         draw = ImageDraw.Draw(base_image)
         font = ImageFont.truetype(font_path, font_size)
     except FileNotFoundError:
-        return False  # Indicate failure silently
+        return False
 
     qr = qrcode.QRCode(
         version=1,
@@ -46,20 +44,17 @@ def create_label_english(data, qr_url, template_path, font_path, output_path):
 
     base_image.paste(qr_img, qr_position)
 
-    # Simplified loop for English text
     for key, text in data.items():
         draw.text(
             coordinates[key],
-            text,  # Use the text directly
+            text,
             font=font,
             fill=text_color,
-            anchor="ra"  # Right-align the text
+            anchor="ra"
         )
 
     base_image.save(output_path)
-    return True  # Indicate success
-
-# --- EXISTING ENDPOINTS (UNCHANGED) ---
+    return True
 
 
 @app.route("/", methods=["POST"])
@@ -160,6 +155,7 @@ def generate_png():
         return render_template("denied.html")
 
 
+# @app.route('/label', methods=["POST"])
 @app.route('/label', methods=["GET", "POST"])
 def generate_new_label():
     referring_url = request.referrer
@@ -178,11 +174,9 @@ def generate_new_label():
             return "Missing form data (serial_number, qr_code_url)", 400
 
         template_file = "clean.jpg"
-        font_file = "Vazirmatn-Regular.ttf"
-        # --- CHANGED: Output file extension is now .jpg ---
+        font_file = "regular.ttf"
         output_file = f"{serial_num}_label.jpg"
 
-        # Call the simplified label creation function
         success = create_label_english(
             label_data, qr_code_url, template_file, font_file, output_file)
 
@@ -191,6 +185,7 @@ def generate_new_label():
         else:
             return "Failed to create label image.", 500
     else:
+        # return render_template("denied.html")
         return render_template("label.html")
 
 
