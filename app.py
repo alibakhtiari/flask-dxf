@@ -19,7 +19,7 @@ def create_label_english(data, qr_url, template_path, font_path, output_path):
         "product_id":    (720, 295),
         "tracking_id":   (720, 390),
     }
-    qr_position = (80, 250)
+    qr_position = (150, 250)
     qr_size = (200, 200)
     font_size = 30
     text_color = "black"
