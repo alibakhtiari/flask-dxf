@@ -1,0 +1,5 @@
+# cronjob file
+# The first line sets the timezone
+CRON_TZ=Asia/Tehran
+# Run the clean.py script every day at 2:00 AM
+0 2 * * * root python /app/clean.py >> /var/log/cron.log 2>&1
