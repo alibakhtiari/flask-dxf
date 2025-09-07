@@ -218,4 +218,4 @@ def generate_new_label():
 if __name__ == "__main__":
     # Use 'flask run --debug' for development mode.
     # The debug flag will automatically be set to True.
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=5000)

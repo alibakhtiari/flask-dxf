@@ -6,7 +6,7 @@ services:
     build: .
     # Map the host port 5000 to the container's port 5000
     ports:
-      - "5000:5000"
+      - "8000:5000"
     # Mount the local application code into the container for easy development
     volumes:
       - .:/app
