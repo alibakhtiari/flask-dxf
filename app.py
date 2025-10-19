@@ -76,6 +76,9 @@ def generate_dxf():
         serial = request.form.get("serial")
         output_file_path = serial + ".dxf"
 
+        if os.path.exists(output_file_path):
+            os.remove(output_file_path)
+
         doc = ezdxf.new()
         msp = doc.modelspace()
 
@@ -142,6 +145,9 @@ def generate_png():
         serial = request.form.get("serial")
         temp_file = serial + '.jpg'
 
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
+
         original_image = Image.open(os.path.join(STATIC_FOLDER, '1.jpg'))
         qr = qrcode.QRCode(
             version=1,
@@ -203,6 +209,9 @@ def generate_new_label():
         template_file = os.path.join(STATIC_FOLDER, "clean.jpg")
         font_file = os.path.join(STATIC_FOLDER, "regular.ttf")
         output_file = f"{serial_num}_label.jpg"
+
+        if os.path.exists(output_file):
+            os.remove(output_file)
 
         success = create_label_english(
             label_data, qr_code_url, template_file, font_file, output_file)
