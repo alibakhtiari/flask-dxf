@@ -5,7 +5,8 @@ from ezdxf.enums import TextEntityAlignment
 import qrcode
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
+STATIC_FOLDER = 'static'
 
 
 def create_label_english(data, qr_url, template_path, font_path, output_path):
@@ -141,7 +142,7 @@ def generate_png():
         serial = request.form.get("serial")
         temp_file = serial + '.jpg'
 
-        original_image = Image.open('1.jpg')
+        original_image = Image.open(os.path.join(STATIC_FOLDER, '1.jpg'))
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -152,8 +153,8 @@ def generate_png():
         qr_image = qr.make_image(fill_color="black", back_color="white")
 
         draw = ImageDraw.Draw(original_image)
-        font = ImageFont.truetype("bold.ttf", size=30)
-        fnt = ImageFont.truetype("bold.ttf", size=28)
+        font = ImageFont.truetype(os.path.join(STATIC_FOLDER, "bold.ttf"), size=30)
+        fnt = ImageFont.truetype(os.path.join(STATIC_FOLDER, "bold.ttf"), size=28)
 
         if len(serial) > 20:
             first_line = serial[:20]
@@ -199,8 +200,8 @@ def generate_new_label():
         if not all([serial_num, qr_code_url]):
             return "Missing form data (serial_number, qr_code_url)", 400
 
-        template_file = "clean.jpg"
-        font_file = "regular.ttf"
+        template_file = os.path.join(STATIC_FOLDER, "clean.jpg")
+        font_file = os.path.join(STATIC_FOLDER, "regular.ttf")
         output_file = f"{serial_num}_label.jpg"
 
         success = create_label_english(
