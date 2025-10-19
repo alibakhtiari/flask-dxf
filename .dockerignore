@@ -1,4 +1,6 @@
 # .dockerignore
 .git
 .venv
+app_old.py
+liara.json
 __pycache__
