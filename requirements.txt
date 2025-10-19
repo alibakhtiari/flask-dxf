@@ -2,4 +2,5 @@ ezdxf
 Flask
 qrcode
 requests
+gunicorn
 pillow==10.4.0
